@@ -5,8 +5,7 @@ This just-for-fun tool takes an image as input, and outputs a trans flag color-p
 
 It finds the nearest color by comparing the result of this formula:
 
-![image](https://wikimedia.org/api/rest_v1/media/math/render/svg/1d43d0de6c828f8e3e85f746ceacb2ee734f2b42)
-
+$distance^2 = {(r_2 - r_1)^2 + (g_2 - g_1)^2 + (b_2 - b_1)^2}$
 
 ![image](https://i.imgur.com/O71bKdK.png)
 
