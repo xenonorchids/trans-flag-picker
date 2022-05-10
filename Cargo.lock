@@ -521,6 +521,7 @@ name = "trans_flag_picker"
 version = "0.1.0"
 dependencies = [
  "image",
+ "num-integer",
 ]
 
 [[package]]
