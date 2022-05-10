@@ -1,18 +1,24 @@
 use image::ImageBuffer;
 use num_integer::Roots;
+use std::env;
 
 const PINK: image::Rgb<u8> = image::Rgb([247, 168, 184]);
 const WHITE: image::Rgb<u8> = image::Rgb([255, 255, 255]);
 const BLUE: image::Rgb<u8> = image::Rgb([85, 205, 252]);
 
-const RESULT_H: usize = 100;
-const RESULT_W: usize = 1000;
-
-const BAR_SIZE: usize = RESULT_H * RESULT_W / 5;
-
 fn main() {
-    let im = image::open("image.jpg").unwrap().to_rgb8();
+    let args: Vec<String> = env::args().collect();
+
+    assert!(args.len() == 2, "Missing arguments");
+    
+
+    let im = image::open(&args[1]).unwrap().to_rgb8();
     let pixels_rgb: Vec<u8> = im.into_raw();
+
+    let result_h: usize = 400;
+    let result_w: usize = 700;
+
+    let bar_size: usize = result_h * result_w / 5;
 
     let mut closest_val_pink: i32 = i32::MAX;
     let mut closest_val_white: i32 = i32::MAX;
@@ -22,7 +28,7 @@ fn main() {
     let mut closest_px_white: Vec<u8> = vec![0, 0, 0];
     let mut closest_px_blue: Vec<u8> = vec![0, 0, 0];
 
-    let mut result_img: Vec<u8> = vec![0; (RESULT_H * RESULT_W * 3) as usize];
+    let mut result_img: Vec<u8> = vec![0; (result_h * result_w * 3) as usize];
 
     for i in 0..pixels_rgb.len() / 3 {
         let dist_pink = get_distance(
@@ -82,7 +88,7 @@ fn main() {
         match row {
             0 => {
                 // blue stripe
-                for i in 0..BAR_SIZE {
+                for i in 0..bar_size {
                     result_img[i * 3] = closest_px_blue[0];
                     result_img[(i * 3) + 1] = closest_px_blue[1];
                     result_img[(i * 3) + 2] = closest_px_blue[2];
@@ -90,7 +96,7 @@ fn main() {
             }
             1 => {
                 // pink stripe
-                for i in BAR_SIZE..BAR_SIZE * 2 {
+                for i in bar_size..bar_size * 2 {
                     result_img[i * 3] = closest_px_pink[0];
                     result_img[(i * 3) + 1] = closest_px_pink[1];
                     result_img[(i * 3) + 2] = closest_px_pink[2];
@@ -98,7 +104,7 @@ fn main() {
             }
             2 => {
                 // white stripe
-                for i in BAR_SIZE * 2..BAR_SIZE * 3 {
+                for i in bar_size * 2..bar_size * 3 {
                     result_img[i * 3] = closest_px_white[0];
                     result_img[(i * 3) + 1] = closest_px_white[1];
                     result_img[(i * 3) + 2] = closest_px_white[2];
@@ -106,7 +112,7 @@ fn main() {
             }
             3 => {
                 // pink stripe
-                for i in BAR_SIZE * 3..BAR_SIZE * 4 {
+                for i in bar_size * 3..bar_size * 4 {
                     result_img[i * 3] = closest_px_pink[0];
                     result_img[(i * 3) + 1] = closest_px_pink[1];
                     result_img[(i * 3) + 2] = closest_px_pink[2];
@@ -114,7 +120,7 @@ fn main() {
             }
             4 => {
                 // blue stripe
-                for i in BAR_SIZE * 4..BAR_SIZE * 5 {
+                for i in bar_size * 4..bar_size * 5 {
                     result_img[i * 3] = closest_px_blue[0];
                     result_img[(i * 3) + 1] = closest_px_blue[1];
                     result_img[(i * 3) + 2] = closest_px_blue[2];
@@ -125,8 +131,9 @@ fn main() {
     }
 
     let new_image: ImageBuffer<image::Rgb<u8>, _> =
-        image::ImageBuffer::from_raw(RESULT_W as u32, RESULT_H as u32, result_img).unwrap();
-    new_image.save("result.png").unwrap();
+        image::ImageBuffer::from_raw(result_w as u32, result_h as u32, result_img).unwrap();
+    new_image.save("output.png").unwrap();
+    println!("Done!")
 }
 
 fn get_distance(r1: u8, g1: u8, b1: u8, r2: u8, g2: u8, b2: u8) -> i32 {
